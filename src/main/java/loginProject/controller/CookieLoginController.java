@@ -45,7 +45,10 @@ public class CookieLoginController {
     @PostMapping("/join")
     public String join(@Valid @ModelAttribute JoinForm joinForm, BindingResult bindingResult){
         if(userService.checkLogInDuplicate(joinForm.getLoginId())){
-            bindingResult.addError(new FieldError("joinForm","loginId","닉네임이 중복됩니다."));
+            bindingResult.addError(new FieldError("joinForm","loginId","아이디가 중복됩니다."));
+        }
+        if(userService.checkNicknameDuplicate(joinForm.getNickname())){
+            bindingResult.addError(new FieldError("joinForm","nickname","닉네임이 중복됩니다."));
         }
 
         if(bindingResult.hasErrors()){
@@ -67,12 +70,13 @@ public class CookieLoginController {
     public String login(@ModelAttribute LoginForm loginForm, BindingResult bindingResult, HttpServletResponse response){
         User user = userService.login(loginForm);
 
-        if(user!=null){
+        if(user==null){
             bindingResult.reject("loginFail","로그인 아이디 또는 비밀번호가 틀렸습니다.");
         }
 
         if(bindingResult.hasErrors()){
-            log.info("[LOGIN] 로그인 실패");
+            log.info("[LOGIN] 로그인 실패asdasdas");
+            System.out.println(bindingResult.getAllErrors());
             return "cookie-login/login";
         }
         Cookie cookie = new Cookie("userId",String.valueOf(user.getId()));
