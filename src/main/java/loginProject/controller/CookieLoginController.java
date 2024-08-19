@@ -25,6 +25,8 @@ public class CookieLoginController {
     private final UserService userService;
     @GetMapping(value = {"","/"})
     public String home(@CookieValue(name="userId",required = false) Long userId, Model model){
+        model.addAttribute("loginType","cookie-login");
+        model.addAttribute("pageName","쿠키로그인");
         User loginUser = userService.getLoginUser(userId);
 
         if(loginUser !=null){
@@ -39,11 +41,16 @@ public class CookieLoginController {
     }
     @GetMapping("/join")
     public String joinPage(Model model){
+        model.addAttribute("loginType","cookie-login");
+        model.addAttribute("pageName","쿠키로그인");
         model.addAttribute("joinRequest", new JoinRequest());
         return "join";
     }
     @PostMapping("/join")
-    public String join(@Valid @ModelAttribute JoinRequest req, BindingResult bindingResult){
+    public String join(@Valid @ModelAttribute JoinRequest req, BindingResult bindingResult,Model model){
+        model.addAttribute("loginType","cookie-login");
+        model.addAttribute("pageName","쿠키로그인");
+
         //loginid중복체크
         if(userService.checkLogInDuplicate(req.getLoginId())){
             bindingResult.addError(new FieldError("joinRequest","loginId","아이디가 중복됩니다."));
@@ -68,13 +75,20 @@ public class CookieLoginController {
     }
     @GetMapping("/login")
     public String loginPage(Model model){
+        model.addAttribute("loginType","cookie-login");
+        model.addAttribute("pageName","쿠키로그인");
+
         model.addAttribute("loginRequest", new LoginRequest());
+
         return "login";
     }
 
     @PostMapping("/login")
-    public String login(@ModelAttribute LoginRequest req, BindingResult bindingResult, HttpServletResponse response){
+    public String login(@ModelAttribute LoginRequest req, BindingResult bindingResult, HttpServletResponse response,Model model){
         User user = userService.login(req);
+        model.addAttribute("loginType","cookie-login");
+        model.addAttribute("pageName","쿠키로그인");
+
 
         if(user==null){
             bindingResult.reject("loginFail","로그인 아이디 또는 비밀번호가 틀렸습니다.");
@@ -94,7 +108,10 @@ public class CookieLoginController {
 
     }
     @GetMapping("/logout")
-    public String logout(HttpServletResponse response){
+    public String logout(HttpServletResponse response,Model model){
+        model.addAttribute("loginType","cookie-login");
+        model.addAttribute("pageName","쿠키로그인");
+
         Cookie cookie = new Cookie("userId",null);
         cookie.setMaxAge(0);
         response.addCookie(cookie);
@@ -104,6 +121,9 @@ public class CookieLoginController {
     @GetMapping("/info")
     public String userInfo(@CookieValue(name="userId",required = false) Long userId, Model model){
         User loginUser = userService.getLoginUser(userId);
+        model.addAttribute("loginType","cookie-login");
+        model.addAttribute("pageName","쿠키로그인");
+
 
         if(loginUser==null){
             return "redirect:/cookie-login/login";
@@ -112,8 +132,11 @@ public class CookieLoginController {
         return "info";
     }
     @GetMapping("/admin")
-    public String adminPage(@CookieValue(name="userId",required = false) Long userId){
+    public String adminPage(@CookieValue(name="userId",required = false) Long userId,Model model){
         User loginUser = userService.getLoginUser(userId);
+        model.addAttribute("loginType","cookie-login");
+        model.addAttribute("pageName","쿠키로그인");
+
         if(loginUser==null){
             return "redirect:/cookie-login/login";
         }
