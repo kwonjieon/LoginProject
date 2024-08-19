@@ -35,12 +35,12 @@ public class CookieLoginController {
             log.info("[HOME] Not Login User");
         }
 
-        return "cookie-login/home";
+        return "home";
     }
     @GetMapping("/join")
     public String joinPage(Model model){
         model.addAttribute("joinRequest", new JoinRequest());
-        return "cookie-login/join";
+        return "join";
     }
     @PostMapping("/join")
     public String join(@Valid @ModelAttribute JoinRequest req, BindingResult bindingResult){
@@ -59,7 +59,7 @@ public class CookieLoginController {
 
         if(bindingResult.hasErrors()){
             log.info("[JOIN] 회원가입 실패");
-            return "cookie-login/join";
+            return "join";
         }
 
         userService.join(req);
@@ -69,7 +69,7 @@ public class CookieLoginController {
     @GetMapping("/login")
     public String loginPage(Model model){
         model.addAttribute("loginRequest", new LoginRequest());
-        return "cookie-login/login";
+        return "login";
     }
 
     @PostMapping("/login")
@@ -83,7 +83,7 @@ public class CookieLoginController {
         if(bindingResult.hasErrors()){
             log.info("[LOGIN] 로그인 실패");
             System.out.println(bindingResult.getAllErrors());
-            return "cookie-login/login";
+            return "login";
         }
         Cookie cookie = new Cookie("userId",String.valueOf(user.getId()));
         cookie.setMaxAge(60*60);
@@ -109,7 +109,7 @@ public class CookieLoginController {
             return "redirect:/cookie-login/login";
         }
         model.addAttribute("user",loginUser);
-        return "cookie-login/info";
+        return "info";
     }
     @GetMapping("/admin")
     public String adminPage(@CookieValue(name="userId",required = false) Long userId){
@@ -120,7 +120,7 @@ public class CookieLoginController {
         if(!loginUser.getRole().equals(UserRole.ADMIN)){
             return "redirect:/cookie-login";
         }
-        return "cookie-login/admin";
+        return "admin";
     }
 
 
