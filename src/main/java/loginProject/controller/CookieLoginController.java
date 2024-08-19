@@ -1,8 +1,8 @@
 package loginProject.controller;
 
 import loginProject.domain.UserRole;
-import loginProject.domain.dto.JoinForm;
-import loginProject.domain.dto.LoginForm;
+import loginProject.domain.dto.JoinRequest;
+import loginProject.domain.dto.LoginRequest;
 import loginProject.domain.entity.User;
 import loginProject.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -39,22 +39,22 @@ public class CookieLoginController {
     }
     @GetMapping("/join")
     public String joinPage(Model model){
-        model.addAttribute("joinForm", new JoinForm());
+        model.addAttribute("joinRequest", new JoinRequest());
         return "cookie-login/join";
     }
     @PostMapping("/join")
-    public String join(@Valid @ModelAttribute JoinForm joinForm, BindingResult bindingResult){
+    public String join(@Valid @ModelAttribute JoinRequest req, BindingResult bindingResult){
         //loginid중복체크
-        if(userService.checkLogInDuplicate(joinForm.getLoginId())){
-            bindingResult.addError(new FieldError("joinForm","loginId","아이디가 중복됩니다."));
+        if(userService.checkLogInDuplicate(req.getLoginId())){
+            bindingResult.addError(new FieldError("joinRequest","loginId","아이디가 중복됩니다."));
         }
         //닉네임중복체크
-        if(userService.checkNicknameDuplicate(joinForm.getNickname())){
-            bindingResult.addError(new FieldError("joinForm","nickname","닉네임이 중복됩니다."));
+        if(userService.checkNicknameDuplicate(req.getNickname())){
+            bindingResult.addError(new FieldError("joinRequest","nickname","닉네임이 중복됩니다."));
         }
         //비밀번호 일치확인체크
-        if(!joinForm.getPassword().equals(joinForm.getPasswordCheck())){
-            bindingResult.addError(new FieldError("joinForm", "passwordCheck","비밀번호가 일치하지 않습니다."));
+        if(!req.getPassword().equals(req.getPasswordCheck())){
+            bindingResult.addError(new FieldError("joinRequest", "passwordCheck","비밀번호가 일치하지 않습니다."));
         }
 
         if(bindingResult.hasErrors()){
@@ -62,26 +62,26 @@ public class CookieLoginController {
             return "cookie-login/join";
         }
 
-        userService.join(joinForm);
+        userService.join(req);
         log.info("[JOIN] 회원가입 성공");
         return "redirect:/cookie-login";
     }
     @GetMapping("/login")
     public String loginPage(Model model){
-        model.addAttribute("loginForm", new LoginForm());
+        model.addAttribute("loginRequest", new LoginRequest());
         return "cookie-login/login";
     }
 
     @PostMapping("/login")
-    public String login(@ModelAttribute LoginForm loginForm, BindingResult bindingResult, HttpServletResponse response){
-        User user = userService.login(loginForm);
+    public String login(@ModelAttribute LoginRequest req, BindingResult bindingResult, HttpServletResponse response){
+        User user = userService.login(req);
 
         if(user==null){
             bindingResult.reject("loginFail","로그인 아이디 또는 비밀번호가 틀렸습니다.");
         }
 
         if(bindingResult.hasErrors()){
-            log.info("[LOGIN] 로그인 실패asdasdas");
+            log.info("[LOGIN] 로그인 실패");
             System.out.println(bindingResult.getAllErrors());
             return "cookie-login/login";
         }

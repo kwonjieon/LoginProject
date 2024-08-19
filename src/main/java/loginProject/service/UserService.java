@@ -1,7 +1,7 @@
 package loginProject.service;
 
-import loginProject.domain.dto.JoinForm;
-import loginProject.domain.dto.LoginForm;
+import loginProject.domain.dto.JoinRequest;
+import loginProject.domain.dto.LoginRequest;
 import loginProject.domain.entity.User;
 import loginProject.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +30,8 @@ public class UserService {
      * 회원가입
      * 화면에서 id,password,nickname입력받아 user로 변환 후 저장
      */
-    public void join(JoinForm form){
-        userRepository.save(form.toEntity());
+    public void join(JoinRequest req){
+        userRepository.save(req.toEntity());
     }
 
     /**
@@ -39,14 +39,14 @@ public class UserService {
      * 아이디와 비밀번호가 일치하면 user return
      * 일치하지않으면 null return
      */
-    public User login(LoginForm form){
-        Optional<User> optionalUser = userRepository.findByLoginId(form.getLoginId());
+    public User login(LoginRequest req){
+        Optional<User> optionalUser = userRepository.findByLoginId(req.getLoginId());
 
         if(optionalUser.isEmpty())
             return null;
 
         User user = optionalUser.get();
-        if(!user.getPassword().equals(form.getPassword()))
+        if(!user.getPassword().equals(req.getPassword()))
             return null;
         return user;
     }
