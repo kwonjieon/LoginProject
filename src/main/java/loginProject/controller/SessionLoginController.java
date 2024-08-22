@@ -1,6 +1,7 @@
 package loginProject.controller;
 
 import loginProject.domain.dto.JoinRequest;
+import loginProject.domain.dto.LoginRequest;
 import loginProject.domain.entity.User;
 import loginProject.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +11,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -62,4 +69,55 @@ public class SessionLoginController {
         return "redirect:/session-login";
 
     }
+
+    @GetMapping("/login")
+    public String loginPage(Model model){
+        model.addAttribute("loginType","session-login");
+        model.addAttribute("pageName","세션 로그인");
+        model.addAttribute("loginRequest",new LoginRequest());
+        return "login";
+    }
+
+    @PostMapping("/login")
+    public String login(@ModelAttribute LoginRequest req , BindingResult bindingResult, HttpServletRequest httpServletRequest,Model model){
+
+        model.addAttribute("loginType","session-login");
+        model.addAttribute("pageName","세션 로그인");
+
+        User user = userService.login(req);
+
+        if(user==null){
+            bindingResult.reject("loginFail","로그인 아이디 또는 비밀번호가 틀렸습니다.");
+        }
+
+        if(bindingResult.hasErrors()){
+            return "login";
+        }
+
+        httpServletRequest.getSession().invalidate();
+        HttpSession session = httpServletRequest.getSession(true);
+        session.setAttribute("userId",user.getId());
+        session.setMaxInactiveInterval(1800);
+
+        sessionList.put(session.getId(),session);
+
+        return "redirect:/session-login";
+    }
+
+
+    public static Hashtable sessionList = new Hashtable();
+
+    @GetMapping("/session-list")
+    @ResponseBody
+    public Map<String,String> sessionList(){
+        Enumeration elements = sessionList.elements();
+        Map<String,String> lists = new HashMap<>();
+        while(elements.hasMoreElements()){
+            HttpSession session = (HttpSession)elements.nextElement();
+            lists.put(session.getId(),String.valueOf(session.getAttribute("userId")));
+        }
+        return lists;
+    }
+
+
 }
