@@ -1,5 +1,6 @@
 package loginProject.controller;
 
+import loginProject.domain.UserRole;
 import loginProject.domain.dto.JoinRequest;
 import loginProject.domain.dto.LoginRequest;
 import loginProject.domain.entity.User;
@@ -103,8 +104,48 @@ public class SessionLoginController {
 
         return "redirect:/session-login";
     }
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest req,Model model){
+        model.addAttribute("loginType","session-login");
+        model.addAttribute("pageName","세션 로그인");
+        HttpSession session = req.getSession(false);
+        if(session!=null){
+            sessionList.remove(session.getId());
+            session.invalidate();
+        }
+        return "redirect:/session-login";
+    }
+
+    @GetMapping("/info")
+    public String userInfo(@SessionAttribute(name = "userId",required = false) Long userId,Model model){
+
+        model.addAttribute("loginType","session-login");
+        model.addAttribute("pageName","세션 로그인");
+
+        User loginUser = userService.getLoginUser(userId);
+        if(loginUser==null){
+            return "redirect:/session-login/login";
+        }
+        model.addAttribute("user",loginUser);
+        return "info";
+    }
+    @GetMapping("/admin")
+    public String adminPage(@SessionAttribute(name = "userId",required = false) Long userId, Model model){
+
+        model.addAttribute("loginType","session-login");
+        model.addAttribute("pageName","세션 로그인");
+        User loginUser = userService.getLoginUser(userId);
+        if(loginUser==null){
+            return "redirect:/session-login/login";
+        }
+        if(!loginUser.getRole().equals(UserRole.ADMIN)){
+            return "redirect:/session-login/login";
+        }
+        return "admin";
+    }
 
 
+    //세션리스트확인
     public static Hashtable sessionList = new Hashtable();
 
     @GetMapping("/session-list")
