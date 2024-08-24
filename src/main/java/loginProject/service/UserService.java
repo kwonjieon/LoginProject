@@ -5,6 +5,7 @@ import loginProject.domain.dto.LoginRequest;
 import loginProject.domain.entity.User;
 import loginProject.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,7 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;//requiredArgs로 di 생성자 주입
 
+    private final BCryptPasswordEncoder encoder;
 
     //id중복체크
     public boolean checkLogInDuplicate(String loginId){
@@ -33,6 +35,15 @@ public class UserService {
     public void join(JoinRequest req){
         userRepository.save(req.toEntity());
     }
+
+
+    /**
+     * 비밀번호 암호화 회원가입
+     */
+    public void bcryptJoin(JoinRequest req){
+        userRepository.save(req.toEntity(encoder.encode(req.getPassword())));
+    }
+
 
     /**
      * 로그인기능
@@ -59,6 +70,14 @@ public class UserService {
     public User getLoginUserById(Long userId){
         if(userId==null) return null;
         Optional<User> optionalUser = userRepository.findById(userId);
+        if(optionalUser.isEmpty()) return null;
+
+        return optionalUser.get();
+    }
+    public User getLoginUserByLoginId(String loginId){
+        if(loginId==null)return null;
+
+        Optional<User> optionalUser = userRepository.findByLoginId(loginId);
         if(optionalUser.isEmpty()) return null;
 
         return optionalUser.get();
