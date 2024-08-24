@@ -56,7 +56,7 @@ public class UserService {
      * 인증,인가 시 사용
      *
      */
-    public User getLoginUser(Long userId){
+    public User getLoginUserById(Long userId){
         if(userId==null) return null;
         Optional<User> optionalUser = userRepository.findById(userId);
         if(optionalUser.isEmpty()) return null;

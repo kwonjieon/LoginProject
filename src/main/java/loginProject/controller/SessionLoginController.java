@@ -30,7 +30,7 @@ public class SessionLoginController {
         model.addAttribute("loginType","session-login");
         model.addAttribute("pageName","세션 로그인");
 
-        User loginUser = userService.getLoginUser(userId);
+        User loginUser = userService.getLoginUserById(userId);
 
         if(loginUser!=null){
             model.addAttribute("nickname",loginUser.getNickname());
@@ -122,7 +122,7 @@ public class SessionLoginController {
         model.addAttribute("loginType","session-login");
         model.addAttribute("pageName","세션 로그인");
 
-        User loginUser = userService.getLoginUser(userId);
+        User loginUser = userService.getLoginUserById(userId);
         if(loginUser==null){
             return "redirect:/session-login/login";
         }
@@ -134,7 +134,7 @@ public class SessionLoginController {
 
         model.addAttribute("loginType","session-login");
         model.addAttribute("pageName","세션 로그인");
-        User loginUser = userService.getLoginUser(userId);
+        User loginUser = userService.getLoginUserById(userId);
         if(loginUser==null){
             return "redirect:/session-login/login";
         }

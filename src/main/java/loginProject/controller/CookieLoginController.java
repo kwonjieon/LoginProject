@@ -27,7 +27,7 @@ public class CookieLoginController {
     public String home(@CookieValue(name="userId",required = false) Long userId, Model model){
         model.addAttribute("loginType","cookie-login");
         model.addAttribute("pageName","쿠키로그인");
-        User loginUser = userService.getLoginUser(userId);
+        User loginUser = userService.getLoginUserById(userId);
 
         if(loginUser !=null){
             model.addAttribute("nickname", loginUser.getNickname());
@@ -120,7 +120,7 @@ public class CookieLoginController {
     }
     @GetMapping("/info")
     public String userInfo(@CookieValue(name="userId",required = false) Long userId, Model model){
-        User loginUser = userService.getLoginUser(userId);
+        User loginUser = userService.getLoginUserById(userId);
         model.addAttribute("loginType","cookie-login");
         model.addAttribute("pageName","쿠키로그인");
 
@@ -133,7 +133,7 @@ public class CookieLoginController {
     }
     @GetMapping("/admin")
     public String adminPage(@CookieValue(name="userId",required = false) Long userId,Model model){
-        User loginUser = userService.getLoginUser(userId);
+        User loginUser = userService.getLoginUserById(userId);
         model.addAttribute("loginType","cookie-login");
         model.addAttribute("pageName","쿠키로그인");
 
