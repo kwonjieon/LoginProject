@@ -139,7 +139,7 @@ public class SessionLoginController {
             return "redirect:/session-login/login";
         }
         if(!loginUser.getRole().equals(UserRole.ADMIN)){
-            return "redirect:/session-login/login";
+            return "redirect:/session-login";
         }
         return "admin";
     }
