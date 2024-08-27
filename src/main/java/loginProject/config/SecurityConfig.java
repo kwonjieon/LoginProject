@@ -1,5 +1,7 @@
 package loginProject.config;
 
+import loginProject.auth.MyAccessDeniedHandler;
+import loginProject.auth.MyAuthenticationEntryPoint;
 import loginProject.domain.UserRole;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -32,5 +34,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout()
                 .logoutUrl("/security-login/logout")
                 .invalidateHttpSession(true).deleteCookies("JSESSIONID");
+
+        http //인증인가 실패처리
+                .exceptionHandling()
+                .authenticationEntryPoint(new MyAuthenticationEntryPoint())
+                .accessDeniedHandler(new MyAccessDeniedHandler());
     }
 }
