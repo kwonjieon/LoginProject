@@ -34,6 +34,6 @@ public class JwtTokenUtil {
     }
     //secretKey를 사용해 token parsing
     public static Claims extractClaims(String token,String secretKey){
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJwt(token).getBody();
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
     }
 }
